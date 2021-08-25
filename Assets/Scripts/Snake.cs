@@ -1,16 +1,19 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Snake : MonoBehaviour
 {
     private Vector2 _direction = Vector2.right;
     private List<Transform> _segments;
     public Transform snakeSegmentPrefab;
+    public Text scoreUI;
+    private float _score;
 
     private void Start()
     {
         _segments = new List<Transform> { this.transform };
+        _score = 0.0f;
     }
 
     // Update is called once per frame
@@ -71,6 +74,8 @@ public class Snake : MonoBehaviour
         snakeSegment.position = _segments[_segments.Count - 1].position;
         
         _segments.Add(snakeSegment);
+        _score++;
+        scoreUI.text = _score.ToString("0");
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -79,6 +84,23 @@ public class Snake : MonoBehaviour
         {
             Grow();
         }
+        else if (other.tag.Equals("Obstacle"))
+        {
+            ResetState();
+        }
+    }
+
+    private void ResetState()
+    {
+        // clear all snakeSegments components
+        for (int i = 1; i < _segments.Count; i++)
+        {
+            Destroy(_segments[i].gameObject);
+        }
+        _segments.Clear();
+        _segments.Add(this.transform);
+        this._score = 0.0f;
+        this.scoreUI.text = this._score.ToString("0");
     }
 
     private bool CheckDirection()
